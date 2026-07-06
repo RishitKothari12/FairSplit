@@ -68,6 +68,26 @@ class GroupRepository:
             and membership.role == MemberRole.ADMIN
         )
 
+
+    async def get_group_members(
+        self,
+        group_id: UUID,
+    ):
+        result = await self.db.execute(
+            select(GroupMember).where(
+                GroupMember.group_id == group_id
+            )
+        )
+
+        return result.scalars().all()
+
+    async def delete_member(
+        self,
+        member: GroupMember,
+    ):
+        await self.db.delete(member)
+        await self.db.commit()
+
     async def update(self, group: Group):
         await self.db.commit()
         await self.db.refresh(group)
