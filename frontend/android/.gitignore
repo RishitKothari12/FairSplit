@@ -1,0 +1,19 @@
+# Android Gradle cache
+/.gradle
+
+# Android Studio captures
+/captures/
+
+# Local SDK path (machine-specific)
+/local.properties
+
+# Generated plugin registrant
+GeneratedPluginRegistrant.java
+
+# Native build outputs
+.cxx/
+
+# Signing keys (never commit these)
+key.properties
+**/*.keystore
+**/*.jks

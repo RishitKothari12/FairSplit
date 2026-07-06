@@ -1,0 +1,99 @@
+###########################################################
+# Flutter
+###########################################################
+
+# Generated files
+frontend/.dart_tool/
+frontend/.packages
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/build/
+
+# IDE
+frontend/.idea/
+frontend/.vscode/
+frontend/*.iml
+
+# Android
+frontend/android/.gradle/
+frontend/android/local.properties
+frontend/android/key.properties
+
+# iOS
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+frontend/ios/Flutter/ephemeral/
+frontend/ios/Flutter/flutter_export_environment.sh
+frontend/ios/Flutter/Generated.xcconfig
+frontend/ios/Runner/GeneratedPluginRegistrant.*
+
+# macOS
+frontend/macos/Pods/
+frontend/macos/Flutter/ephemeral/
+
+# Linux
+frontend/linux/flutter/ephemeral/
+
+# Windows
+frontend/windows/flutter/ephemeral/
+
+###########################################################
+# Python
+###########################################################
+
+backend/.venv/
+backend/**/__pycache__/
+backend/**/*.py[cod]
+backend/.pytest_cache/
+backend/.mypy_cache/
+
+###########################################################
+# Environment Variables
+###########################################################
+
+backend/.env
+frontend/.env
+
+###########################################################
+# Database
+###########################################################
+
+*.db
+*.sqlite3
+
+###########################################################
+# Logs
+###########################################################
+
+*.log
+
+###########################################################
+# IDE (Global)
+###########################################################
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+###########################################################
+# OS
+###########################################################
+
+.DS_Store
+Thumbs.db
+
+###########################################################
+# Secrets
+###########################################################
+
+*.pem
+*.key
+*.crt
+
+###########################################################
+# Coverage
+###########################################################
+
+coverage/
+htmlcov/
