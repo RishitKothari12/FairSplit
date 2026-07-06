@@ -25,6 +25,11 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from app.db.base import Base
 import app.models.user
+import app.models.group
+import app.models.group_member
+import app.models.expense
+import app.models.expense_split
+import app.models.settlement_history
 
 target_metadata = Base.metadata
 

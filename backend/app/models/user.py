@@ -2,7 +2,15 @@ from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import BaseModel
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import relationship
 
+if TYPE_CHECKING:
+    from app.models.group import Group
+    from app.models.group_member import GroupMember
+    from app.models.expense import Expense
+    from app.models.expense_split import ExpenseSplit
+    from app.models.settlement_history import SettlementHistory
 
 class User(BaseModel):
     __tablename__ = "users"
@@ -30,4 +38,28 @@ class User(BaseModel):
     is_active: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
+    )
+
+    created_groups: Mapped[list["Group"]] = relationship(
+        back_populates="creator",
+    )
+
+    group_memberships: Mapped[list["GroupMember"]] = relationship(
+        back_populates="user",
+    )
+
+    expenses_paid: Mapped[list["Expense"]] = relationship(
+        back_populates="payer",
+    )
+
+    expense_splits: Mapped[list["ExpenseSplit"]] = relationship(
+        back_populates="user",
+    )
+
+    settlements_paid: Mapped[list["SettlementHistory"]] = relationship(
+        foreign_keys="SettlementHistory.payer_id",
+    )
+
+    settlements_received: Mapped[list["SettlementHistory"]] = relationship(
+        foreign_keys="SettlementHistory.receiver_id",
     )
