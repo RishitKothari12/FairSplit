@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any
+import logging
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -10,6 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.db.session import get_db
 from app.repositories.user_repository import UserRepository
+
+logger = logging.getLogger(__name__)
 
 # Password hashing
 pwd_context = CryptContext(
@@ -63,6 +66,10 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ):
+    logger.info("=" * 50)
+    logger.info("Authenticating user...")
+    logger.info(f"Received Token: {token}")
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid or expired token",
@@ -76,12 +83,16 @@ async def get_current_user(
             algorithms=[settings.ALGORITHM],
         )
 
+        logger.info(f"Decoded Payload: {payload}")
+
         email: str | None = payload.get("sub")
 
         if email is None:
+            logger.error("JWT payload has no subject (sub).")
             raise credentials_exception
 
-    except JWTError:
+    except JWTError as e:
+        logger.error(f"JWT Decode Error: {e}")
         raise credentials_exception
 
     repository = UserRepository(db)
@@ -89,6 +100,10 @@ async def get_current_user(
     user = await repository.get_by_email(email)
 
     if user is None:
+        logger.error(f"User not found for email: {email}")
         raise credentials_exception
+
+    logger.info(f"Authenticated User: {user.email}")
+    logger.info("=" * 50)
 
     return user
