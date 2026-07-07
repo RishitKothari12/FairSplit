@@ -8,6 +8,7 @@ from app.models.expense import Expense, SplitType
 from app.models.expense_split import ExpenseSplit
 from app.repositories.expense_repository import ExpenseRepository
 from app.repositories.group_repository import GroupRepository
+from app.services.group_guard import GroupGuard
 from app.splitters.factory import SplitterFactory
 
 
@@ -20,6 +21,7 @@ class ExpenseService:
     ):
         self.expense_repository = expense_repository
         self.group_repository = group_repository
+        self.guard = GroupGuard(group_repository)
 
     async def create(
         self,
@@ -53,30 +55,17 @@ class ExpenseService:
         )
 
         # Payer must belong to group
-        payer_membership = await self.group_repository.get_membership(
+        await self.guard.require_member(
             group_id,
             paid_by,
         )
 
-        if payer_membership is None:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Payer is not a member of this group.",
-            )
-
         # Every participant must belong to the group
         for participant in participants:
-
-            membership = await self.group_repository.get_membership(
+            await self.guard.require_member(
                 group_id,
                 participant.user_id,
             )
-
-            if membership is None:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="One or more participants are not members of this group.",
-                )
 
         try:
 
@@ -206,13 +195,7 @@ class ExpenseService:
         group_id: UUID,
         user_id: UUID,
     ):
-        membership = await self.group_repository.get_membership(
+        await self.guard.require_member(
             group_id,
             user_id,
         )
-
-        if membership is None:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not a member of this group.",
-            )

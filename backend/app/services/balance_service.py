@@ -3,7 +3,10 @@ from decimal import Decimal
 from uuid import UUID
 
 from app.repositories.expense_repository import ExpenseRepository
+from app.repositories.group_repository import GroupRepository
+from app.repositories.settlement_repository import SettlementRepository
 from app.schemas.balance import BalanceResponse
+from app.services.group_guard import GroupGuard
 
 
 class BalanceService:
@@ -11,8 +14,13 @@ class BalanceService:
     def __init__(
         self,
         expense_repository: ExpenseRepository,
+        settlement_repository: SettlementRepository,
+        group_repository: GroupRepository,
     ):
         self.expense_repository = expense_repository
+        self.settlement_repository = settlement_repository
+        self.group_repository = group_repository
+        self.guard = GroupGuard(group_repository)
 
     async def calculate_group_balances(
         self,
@@ -38,12 +46,28 @@ class BalanceService:
             # Debit every participant
             balances[split.user_id] -= split.amount_owed
 
+        # Apply settlements
+        settlements = await self.settlement_repository.get_group_settlements(
+            group_id,
+        )
+
+        for settlement in settlements:
+            balances[settlement.payer_id] += settlement.amount
+            balances[settlement.receiver_id] -= settlement.amount
+
         return balances
 
     async def simplify_debts(
         self,
         group_id: UUID,
+        current_user_id: UUID,
     ):
+
+        await self.guard.require_member(
+            group_id,
+            current_user_id,
+        )
+
         balances = await self.calculate_group_balances(
             group_id,
         )
@@ -69,7 +93,10 @@ class BalanceService:
             debtor_id, debt = debtors[i]
             creditor_id, credit = creditors[j]
 
-            amount = min(debt, credit)
+            amount = min(
+                debt,
+                credit,
+            )
 
             settlements.append(
                 BalanceResponse(

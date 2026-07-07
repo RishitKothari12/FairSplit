@@ -9,6 +9,8 @@ from app.models.user import User
 from app.repositories.expense_repository import ExpenseRepository
 from app.schemas.balance import BalanceResponse
 from app.services.balance_service import BalanceService
+from app.repositories.settlement_repository import SettlementRepository
+from app.repositories.group_repository import GroupRepository
 
 router = APIRouter(
     prefix="/balances",
@@ -27,8 +29,11 @@ async def get_group_balances(
 ):
     service = BalanceService(
         ExpenseRepository(db),
+        SettlementRepository(db),
+        GroupRepository(db),
     )
 
     return await service.simplify_debts(
         group_id,
+        current_user.id,
     )
