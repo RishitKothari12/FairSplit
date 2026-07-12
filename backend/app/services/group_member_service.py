@@ -75,7 +75,21 @@ class GroupMemberService:
                 detail="You are not a member of this group.",
             )
 
-        return await self.group_repository.get_group_members(group_id)
+        members = await self.group_repository.get_group_members(
+            group_id,
+        )
+
+        return [
+            {
+                "id": member.id,
+                "user_id": member.user_id,
+                "group_id": member.group_id,
+                "full_name": member.user.full_name,
+                "email": member.user.email,
+                "role": member.role.value,
+            }
+            for member in members
+        ]
 
     async def remove_member(
         self,

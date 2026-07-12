@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-import 'app_router.dart';
 import '../core/theme/app_theme.dart';
+import 'router.dart';
 
 class FairSplitApp extends StatelessWidget {
   const FairSplitApp({super.key});
@@ -10,8 +9,8 @@ class FairSplitApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
       title: 'FairSplit',
+      debugShowCheckedModeBanner: false,
 
       theme: AppTheme.lightTheme,
 

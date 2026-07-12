@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.group import Group
 from app.models.group_member import GroupMember, MemberRole
@@ -74,7 +75,11 @@ class GroupRepository:
         group_id: UUID,
     ):
         result = await self.db.execute(
-            select(GroupMember).where(
+            select(GroupMember)
+            .options(
+                selectinload(GroupMember.user),
+            )
+            .where(
                 GroupMember.group_id == group_id
             )
         )

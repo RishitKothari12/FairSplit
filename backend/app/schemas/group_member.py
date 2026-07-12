@@ -11,8 +11,10 @@ class GroupMemberResponse(BaseModel):
     id: UUID
     user_id: UUID
     group_id: UUID
+
+    full_name: str
+    email: EmailStr
+
     role: str
 
-    model_config = ConfigDict(
-        from_attributes=True,
-    )
+    model_config = ConfigDict(from_attributes=True)
