@@ -97,11 +97,29 @@ class ExpenseCreate(BaseModel):
 
         return self
 
+class ExpenseParticipantResponse(BaseModel):
+    user_id: UUID
+    full_name: str
+    email: str
+    amount_owed: Decimal
+    is_settled: bool
+
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+
+
+class ExpensePayerResponse(BaseModel):
+    id: UUID
+    full_name: str
+
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
 
 class ExpenseResponse(BaseModel):
     id: UUID
     group_id: UUID
-    paid_by: UUID
 
     title: str
     description: str | None
@@ -111,6 +129,12 @@ class ExpenseResponse(BaseModel):
     currency: str
 
     split_type: SplitType
+
+    expense_date: datetime
+
+    paid_by: ExpensePayerResponse
+
+    participants: list[ExpenseParticipantResponse]
 
     model_config = ConfigDict(
         from_attributes=True,

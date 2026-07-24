@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/currency_formatter.dart';
 
 class BalanceCard extends StatelessWidget {
   final double totalBalance;
@@ -44,7 +46,7 @@ class BalanceCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           Text(
-            "${totalBalance >= 0 ? "+" : "-"}₹${totalBalance.abs().toStringAsFixed(2)}",
+            "${totalBalance >= 0 ? "+" : "-"}${CurrencyFormatter.format(totalBalance.abs())}",
             style: TextStyle(
               color: totalBalanceColor,
               fontSize: 36,
@@ -68,9 +70,11 @@ class BalanceCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "₹${youOwe.toStringAsFixed(2)}",
+                      CurrencyFormatter.format(
+                        youOwe,
+                      ),
                       style: const TextStyle(
-                        color: Color(0xFFEF4444),
+                        color: AppColors.negative,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -97,9 +101,11 @@ class BalanceCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "₹${youAreOwed.toStringAsFixed(2)}",
+                      CurrencyFormatter.format(
+                        youAreOwed,
+                      ),
                       style: const TextStyle(
-                        color: Color(0xFF22C55E),
+                        color: AppColors.positive,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),

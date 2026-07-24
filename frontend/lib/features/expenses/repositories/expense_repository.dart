@@ -19,6 +19,15 @@ final groupExpensesProvider =
   },
 );
 
+final expenseProvider =
+    FutureProvider.family<Expense, String>(
+  (ref, expenseId) async {
+    return ref
+        .read(expenseRepositoryProvider)
+        .getExpense(expenseId);
+  },
+);
+
 class ExpenseRepository {
   Future<List<Expense>> getGroupExpenses(
     String groupId,
@@ -38,6 +47,24 @@ class ExpenseRepository {
     await DioClient.dio.post(
       "/expenses",
       data: request.toJson(),
+    );
+  }
+
+  Future<Expense> getExpense(
+    String expenseId,
+  ) async {
+    final response = await DioClient.dio.get(
+      "${ApiConstants.expenses}/$expenseId",
+    );
+
+    return Expense.fromJson(response.data);
+  }
+
+  Future<void> deleteExpense(
+    String expenseId,
+  ) async {
+    await DioClient.dio.delete(
+      "${ApiConstants.expenses}/$expenseId",
     );
   }
 }

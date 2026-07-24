@@ -29,4 +29,19 @@ class ExpenseController extends StateNotifier<bool> {
       state = false;
     }
   }
+
+  Future<bool> deleteExpense(
+    String expenseId,
+  ) async {
+    state = true;
+
+    try {
+      await _repository.deleteExpense(expenseId);
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      state = false;
+    }
+  }
 }

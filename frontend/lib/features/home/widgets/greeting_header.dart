@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../profile/screens/profile_screen.dart';
 
 class GreetingHeader extends StatelessWidget {
   final String name;
@@ -47,9 +48,20 @@ class GreetingHeader extends StatelessWidget {
             ],
           ),
         ),
-        CircleAvatar(
-          radius: 22,
-          child: Icon(Icons.person),
+        InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ProfileScreen(),
+              ),
+            );
+          },
+          child: const CircleAvatar(
+            radius: 22,
+            child: Icon(Icons.person),
+          ),
         ),
       ],
     );

@@ -19,11 +19,26 @@ class UserResponse(BaseModel):
     email: EmailStr
     profile_photo: str | None = None
     currency: str
+    upi_id: str | None = None
     is_active: bool
 
     model_config = ConfigDict(from_attributes=True)
 
+class UpdateUpiIdRequest(BaseModel):
+    upi_id: str | None = Field(
+        default=None,
+        max_length=100,
+    )
 
+class UserPaymentResponse(BaseModel):
+    id: UUID
+    full_name: str
+    upi_id: str | None
+
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+    
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"

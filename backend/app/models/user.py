@@ -35,6 +35,11 @@ class User(BaseModel):
         default="INR",
     )
 
+    upi_id: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
     is_active: Mapped[bool] = mapped_column(
         Boolean,
         default=True,

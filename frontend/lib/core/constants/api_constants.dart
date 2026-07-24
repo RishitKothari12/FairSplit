@@ -14,4 +14,5 @@ class ApiConstants {
   static const String expenses = "/expenses";
   static const String balances = "/balances";
   static const String settlements = "/settlements";
+  static const users = "/users";
 }

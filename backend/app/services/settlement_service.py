@@ -7,6 +7,7 @@ from app.models.settlement_history import SettlementHistory
 from app.repositories.group_repository import GroupRepository
 from app.repositories.settlement_repository import SettlementRepository
 from app.services.group_guard import GroupGuard
+from app.schemas.settlement import SettlementResponse
 
 
 class SettlementService:
@@ -24,6 +25,7 @@ class SettlementService:
         self,
         current_user_id: UUID,
         group_id: UUID,
+        payer_id: UUID,
         receiver_id: UUID,
         amount: Decimal,
         note: str | None,
@@ -40,9 +42,16 @@ class SettlementService:
             )
 
         # Both users must belong to the group
+        # Logged-in user must belong to the group
         await self.guard.require_member(
             group_id,
             current_user_id,
+        )
+
+        # Both settlement participants must belong to the group
+        await self.guard.require_member(
+            group_id,
+            payer_id,
         )
 
         await self.guard.require_member(
@@ -50,7 +59,7 @@ class SettlementService:
             receiver_id,
         )
 
-        if current_user_id == receiver_id:
+        if payer_id == receiver_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="You cannot settle with yourself.",
@@ -58,14 +67,31 @@ class SettlementService:
 
         settlement = SettlementHistory(
             group_id=group_id,
-            payer_id=current_user_id,
+            payer_id=payer_id,
             receiver_id=receiver_id,
             amount=amount,
             note=note,
         )
 
-        return await self.settlement_repository.create(
+        settlement = await self.settlement_repository.create(
             settlement,
+        )
+
+        # Load relationships so payer/receiver names are available
+        settlement = await self.settlement_repository.get_by_id(
+            settlement.id,
+        )
+
+        return SettlementResponse(
+            id=settlement.id,
+            group_id=settlement.group_id,
+            payer_id=settlement.payer_id,
+            payer_name=settlement.payer.full_name,
+            receiver_id=settlement.receiver_id,
+            receiver_name=settlement.receiver.full_name,
+            amount=settlement.amount,
+            note=settlement.note,
+            settled_at=settlement.settled_at,
         )
 
     async def get_group_settlements(
@@ -79,6 +105,21 @@ class SettlementService:
             current_user_id,
         )
 
-        return await self.settlement_repository.get_group_settlements(
+        settlements = await self.settlement_repository.get_group_settlements(
             group_id,
         )
+
+        return [
+            SettlementResponse(
+                id=settlement.id,
+                group_id=settlement.group_id,
+                payer_id=settlement.payer_id,
+                payer_name=settlement.payer.full_name,
+                receiver_id=settlement.receiver_id,
+                receiver_name=settlement.receiver.full_name,
+                amount=settlement.amount,
+                note=settlement.note,
+                settled_at=settlement.settled_at,
+            )
+            for settlement in settlements
+        ]

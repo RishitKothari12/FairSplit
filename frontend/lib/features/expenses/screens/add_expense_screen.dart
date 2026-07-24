@@ -6,6 +6,7 @@ import '../repositories/expense_repository.dart';
 import '../controllers/expense_controller.dart';
 import '../models/expense_create_request.dart';
 import '../models/expense_participant.dart';
+import '../../balances/repositories/balance_repository.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
   final String groupId;
@@ -215,6 +216,9 @@ class _AddExpenseScreenState
                     if (success) {
                       ref.invalidate(
                         groupExpensesProvider(widget.groupId),
+                      );
+                      ref.invalidate(
+                        groupBalanceProvider(widget.groupId),
                       );
 
                       Navigator.pop(context);

@@ -39,6 +39,7 @@ async def create_settlement(
     return await service.create(
         current_user_id=current_user.id,
         group_id=settlement.group_id,
+        payer_id=settlement.payer_id,
         receiver_id=settlement.receiver_id,
         amount=settlement.amount,
         note=settlement.note,

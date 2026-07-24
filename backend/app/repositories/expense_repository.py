@@ -35,10 +35,13 @@ class ExpenseRepository:
         result = await self.db.execute(
             select(Expense)
             .options(
-                selectinload(Expense.splits),
+                selectinload(Expense.payer),
+                selectinload(Expense.splits).selectinload(
+                    ExpenseSplit.user,
+                ),
             )
             .where(
-                Expense.id == expense_id
+                Expense.id == expense_id,
             )
         )
 
@@ -51,13 +54,16 @@ class ExpenseRepository:
         result = await self.db.execute(
             select(Expense)
             .options(
-                selectinload(Expense.splits),
+                selectinload(Expense.payer),
+                selectinload(Expense.splits).selectinload(
+                    ExpenseSplit.user,
+                ),
             )
             .where(
-                Expense.group_id == group_id
+                Expense.group_id == group_id,
             )
             .order_by(
-                Expense.created_at.desc()
+                Expense.created_at.desc(),
             )
         )
 

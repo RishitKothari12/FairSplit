@@ -11,6 +11,12 @@ from app.repositories.group_repository import GroupRepository
 from app.services.group_guard import GroupGuard
 from app.splitters.factory import SplitterFactory
 
+from app.schemas.expense import (
+    ExpenseResponse,
+    ExpensePayerResponse,
+    ExpenseParticipantResponse,
+)
+
 
 class ExpenseService:
 
@@ -109,7 +115,11 @@ class ExpenseService:
 
             await self.expense_repository.commit()
 
-            return expense
+            expense = await self.expense_repository.get_by_id(
+                expense.id,
+            )
+
+            return self._to_response(expense)
 
         except Exception:
             await self.expense_repository.rollback()
@@ -135,7 +145,7 @@ class ExpenseService:
             current_user_id,
         )
 
-        return expense
+        return self._to_response(expense)
 
     async def get_group_expenses(
         self,
@@ -148,9 +158,14 @@ class ExpenseService:
             current_user_id,
         )
 
-        return await self.expense_repository.get_group_expenses(
+        expenses = await self.expense_repository.get_group_expenses(
             group_id,
         )
+
+        return [
+            self._to_response(expense)
+            for expense in expenses
+        ]
 
     async def delete(
         self,
@@ -198,4 +213,33 @@ class ExpenseService:
         await self.guard.require_member(
             group_id,
             user_id,
+        )
+
+    def _to_response(
+        self,
+        expense: Expense,
+    ) -> ExpenseResponse:
+        return ExpenseResponse(
+            id=expense.id,
+            group_id=expense.group_id,
+            title=expense.title,
+            description=expense.description,
+            amount=expense.amount,
+            currency=expense.currency,
+            split_type=expense.split_type,
+            expense_date=expense.expense_date,
+            paid_by=ExpensePayerResponse(
+                id=expense.payer.id,
+                full_name=expense.payer.full_name,
+            ),
+            participants=[
+                ExpenseParticipantResponse(
+                    user_id=split.user.id,
+                    full_name=split.user.full_name,
+                    email=split.user.email,
+                    amount_owed=split.amount_owed,
+                    is_settled=split.is_settled,
+                )
+                for split in expense.splits
+            ],
         )

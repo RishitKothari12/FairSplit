@@ -76,7 +76,7 @@ class GroupRepository:
     ):
         result = await self.db.execute(
             select(GroupMember)
-            .options(
+           .options(
                 selectinload(GroupMember.user),
             )
             .where(
