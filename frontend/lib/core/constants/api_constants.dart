@@ -2,7 +2,8 @@ class ApiConstants {
   ApiConstants._();
 
   // Android Emulator
-  static const String baseUrl = "http://192.168.1.12:8000";
+static const String baseUrl =
+    "https://fairsplit-backend-4i8h.onrender.com"; 
 
   // Uncomment if running on physical device
   // static const String baseUrl = "http://YOUR_LOCAL_IP:8000";
