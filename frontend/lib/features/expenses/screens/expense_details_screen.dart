@@ -5,6 +5,8 @@ import '../repositories/expense_repository.dart';
 import '../controllers/expense_controller.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
+import '../../balances/repositories/balance_repository.dart';
+import '../../settlements/controllers/settlement_controller.dart';
 
 class ExpenseDetailsScreen extends ConsumerWidget {
   final String expenseId;
@@ -211,7 +213,15 @@ class ExpenseDetailsScreen extends ConsumerWidget {
 
                     if (success) {
                         ref.invalidate(
-                        groupExpensesProvider(expense.groupId),
+                          groupExpensesProvider(expense.groupId),
+                        );
+
+                        ref.invalidate(
+                          groupBalanceProvider(expense.groupId),
+                        );
+
+                        ref.invalidate(
+                          groupSettlementProvider(expense.groupId),
                         );
 
                         Navigator.pop(context);
