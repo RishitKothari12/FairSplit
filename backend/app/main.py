@@ -7,10 +7,19 @@ from app.api.v1.group_members import router as group_members_router
 from app.api.v1.expenses import router as expenses_router
 from app.api.v1.balances import router as balances_router
 from app.api.v1.settlements import router as settlement_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="FairSplit API",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Register routers
