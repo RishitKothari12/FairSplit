@@ -40,25 +40,13 @@ class AuthService:
 
         user = await self.repository.get_by_email(email)
 
-        print("=" * 50)
-        print("LOGIN DEBUG")
-        print("Email:", email)
-
         if not user:
-            print("User not found")
-            print("=" * 50)
             return None
-
-        print("DB Hash:", user.hashed_password)
-        print("Received Password:", password)
 
         is_valid = verify_password(
             password,
             user.hashed_password,
         )
-
-        print("Password Valid:", is_valid)
-        print("=" * 50)
 
         if not is_valid:
             return None
