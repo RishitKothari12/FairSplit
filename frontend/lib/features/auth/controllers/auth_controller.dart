@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../models/login_request.dart';
 import '../repositories/auth_repository.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepository(),
@@ -23,26 +25,26 @@ class AuthController extends StateNotifier<bool> {
   Future<bool> login({
     required String email,
     required String password,
-    }) async {
+  }) async {
     state = true;
 
     try {
-        final response = await _repository.login(
+      final response = await _repository.login(
         LoginRequest(
-            email: email,
-            password: password,
+          email: email,
+          password: password,
         ),
-        );
+      );
 
-        await SecureStorage.saveToken(
-        response.accessToken,
-        );
+      await SecureStorage.saveToken(response.accessToken);
 
-        return true;
-    } catch (_) {
-        return false;
+      return true;
+    } on DioException catch (e) {
+      return false;
+    } catch (e, stackTrace) {
+      return false;
     } finally {
-        state = false;
+      state = false;
     }
-    }
+  }
 }
